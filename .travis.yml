@@ -1,0 +1,33 @@
+sudo: required
+services:
+  - docker
+before_install:
+  - docker pull yshalsager/cyanogenmod:latest
+before_script:
+- cd $HOME
+- wget -q https://github.com/TwrpBuilder/twrp-sources/releases/download/cm-4.4/twrp-4.4-cm-no-repo.tar.xz
+  -O $HOME/twrp.tar.xz
+- tar -xJf twrp.tar.xz --directory $HOME/ && rm twrp.tar.xz && mv twrp-4.4-no-repo/ twrp/
+script:
+  - cd $HOME/twrp/ && git clone https://github.com/TwrpBuilder/android_device_DOOGEE_Titans2_DG700.git device/DOOGEE/Titans2_DG700
+  - rm -rf bootable/recovery && git clone https://github.com/omnirom/android_bootable_recovery -b android-4.4 bootable/recovery-twrp
+  - |
+    docker run --rm -i -e USER_ID=$(id -u) -e GROUP_ID=$(id -g) -v "$(pwd):/home/cmbuild/twrp/:rw,z" yshalsager/cyanogenmod bash << EOF
+    cd /home/cmbuild/twrp/
+    source build/envsetup.sh && lunch cm_Titans2_DG700-eng && make -j16 recoveryimage
+    exit
+    EOF
+after_success:
+  - export version=$(cat bootable/recovery-twrp/variables.h | grep "define TW_MAIN_VERSION_STR" | cut -d '"' -f2)
+  - cp $HOME/twrp/out/target/product/Titans2_DG700/recovery.img $HOME/twrp/TWRP-$version-Titans2_DG700-$(date +"%Y%m%d").img
+
+deploy:
+  skip_cleanup: true
+  provider: releases
+  api_key: "$GIT_OAUTH_TOKEN_TB"
+  file_glob: true
+  file: $HOME/twrp/*.img
+  on:
+    tags: false
+    repo: TwrpBuilder/android_device_DOOGEE_Titans2_DG700
+    branch: master

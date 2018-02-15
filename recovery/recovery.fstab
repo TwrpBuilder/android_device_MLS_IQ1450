@@ -1,0 +1,10 @@
+/boot		      emmc	     /dev/bootimg               flags=display="Boot";backup=1
+/logo		      emmc	     /dev/logo					flags=display="Logo";backup=1
+/nvram		      emmc	     /dev/nvram					flags=display="Nvram";backup=1;flashimg=1
+/recovery	      emmc	     /dev/recovery			    flags=display="Recovery";backup=1;flashimg=1
+/system		      ext4	     /emmc@android 
+/cache		      ext4	     /emmc@cache
+/data		      ext4	     /emmc@usrdata              length=-16384
+/secro 	          emmc       /dev/sec_ro                flags=subpartitionof=/nvram;backup=1
+/external_sd  	  auto	     /dev/block/mmcblk1p1	/dev/block/mmcblk1	flags=display="Micro SD";storage;wipeingui;removable
+/usb-otg	      auto	     /dev/block/sda1		/dev/block/sda		flags=display="Usb-Otg";storage;wipeingui;removable
