@@ -2,7 +2,7 @@ sudo: required
 services:
   - docker
 before_install:
-  - docker pull yshalsager/cyanogenmod:latest
+  - docker pull surendrajat/twrp-builder:latest
 before_script:
 - cd $HOME
 - wget -q https://github.com/TwrpBuilder/twrp-sources/releases/download/cm-4.4/twrp-4.4-cm-no-repo.tar.xz
@@ -12,7 +12,7 @@ script:
   - cd $HOME/twrp/ && git clone https://github.com/TwrpBuilder/android_device_MLS_IQ1450.git device/MLS/IQ1450
   - rm -rf bootable/recovery && git clone https://github.com/omnirom/android_bootable_recovery -b android-4.4 bootable/recovery-twrp
   - |
-    docker run --rm -i -e USER_ID=$(id -u) -e GROUP_ID=$(id -g) -v "$(pwd):/home/cmbuild/twrp/:rw,z" yshalsager/cyanogenmod bash << EOF
+    docker run --rm -i -e USER_ID=$(id -u) -e GROUP_ID=$(id -g) -v "$(pwd):/home/cmbuild/twrp/:rw,z" surendrajat/twrp-builder bash << EOF
     cd /home/cmbuild/twrp/
     source build/envsetup.sh ; lunch cm_IQ1450-eng ; make -j16 recoveryimage
     exit
